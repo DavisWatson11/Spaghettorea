@@ -46,8 +46,7 @@ public class PotScript : MonoBehaviour, IDropHandler
             {
                 case PastaType.spaghetti:
                     OrderGenerator.MealPasta = OrderGenerator.MenuPastaType.spaghetti;
-                    Debug.Log("Spagggggg")
-                    SpagImage.transform.position = SpagAnchor.transform.position;
+  SpagImage.transform.position = SpagAnchor.transform.position;
                     break;
                 case PastaType.fettuccine:
                     OrderGenerator.MealPasta = OrderGenerator.MenuPastaType.fetuccini;

@@ -46,11 +46,7 @@ public class PotScript : MonoBehaviour, IDropHandler
             {
                 case PastaType.spaghetti:
                     OrderGenerator.MealPasta = OrderGenerator.MenuPastaType.spaghetti;
-                    Debug.Log("Spagggggg");
-                    // GameObject SpaghettiClone = Instantiate(Spaghetti, new Vector3(-625.9998f, -84, 92.59552f), Quaternion.identity);        // spawn another spaghetti if placed in the right spot
-                    // SpaghettiClone.transform.SetParent(SpagCanvas.transform, false);
-
-                    SpagImage.transform.position = SpagAnchor.transform.position;
+  SpagImage.transform.position = SpagAnchor.transform.position;
                     break;
                 case PastaType.fettuccine:
                     OrderGenerator.MealPasta = OrderGenerator.MenuPastaType.fetuccini;

@@ -1,1 +1,77 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
+public class PotScript : MonoBehaviour, IDropHandler
+{
+    public GameObject Spaghetti;
+    public GameObject Fettuccine;
+    public GameObject SpagCanvas;
+    public GameObject FetCanvas;
+    public GameObject SpagAnchor;
+    public GameObject FetAnchor;
+    public AudioClip Sizzle;            // plays sizzle sound when ran
+    public GameObject Blocker;
+    public AudioSource Source;
+    public static bool InPot;             // true if spaghetti is already in pot
+    public static bool cookTimerStart = false;
+    [SerializeField] GameObject spagScooper;
+    public Image SpagImage;
+    public Image FetImage;
+
+    public enum LevelCooked {overcooked, undercooked, perfect}; // an enum type that tells whether pasta is over, under, or perfectly cooked
+    public static LevelCooked CookedType;              // a variable of type LevelCooked
+
+    public enum PastaType {spaghetti, fettuccine, none}
+    public static PastaType PastaInPot = PastaType.none;
+
+    private Vector3 newPosition;
+    public void Start()
+    {
+        InPot = false;
+        newPosition.x = 0;
+        newPosition.y = 0;
+        newPosition.z = 0;
+    }
+    public void OnDrop(PointerEventData eventData)
+    {
+        Debug.Log("Dropped");
+        if (eventData.pointerDrag != null && !InPot)
+        {
+            eventData.pointerDrag.GetComponent<RectTransform>().anchoredPosition = GetComponent<RectTransform>().anchoredPosition * 1.5f;
+
+            switch (PastaInPot)
+            {
+                case PastaType.spaghetti:
+                    OrderGenerator.MealPasta = OrderGenerator.MenuPastaType.spaghetti;
+                    Debug.Log("Spagggggg");
+                    // GameObject SpaghettiClone = Instantiate(Spaghetti, new Vector3(-625.9998f, -84, 92.59552f), Quaternion.identity);        // spawn another spaghetti if placed in the right spot
+                    // SpaghettiClone.transform.SetParent(SpagCanvas.transform, false);
+
+                    SpagImage.transform.position = SpagAnchor.transform.position;
+                    break;
+                case PastaType.fettuccine:
+                    OrderGenerator.MealPasta = OrderGenerator.MenuPastaType.fetuccini;
+                    Debug.Log("Fettttttt");
+                    GameObject FettuccineClone = Instantiate(Fettuccine, new Vector3(-836, 168, 92.59552f), Quaternion.identity);        // spawn another fettuccine if placed in the right spot
+                    FettuccineClone.transform.SetParent(FetCanvas.transform, false);
+
+                    FetImage.transform.position = FetAnchor.transform.position;
+                    break;
+            }
+            InPot = true;
+            Source.PlayOneShot(Sizzle);
+            cookTimerStart = true;
+            spagScooper.SetActive(true);
+            Blocker.SetActive(true);
+        }
+    }
+
+    public void Update()
+    {
+        if (cookTimerStart)
+            TimerScript.totalCookTime += Time.deltaTime;
+    }
+}

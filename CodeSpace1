@@ -1,77 +1,50 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using TMPro;
 
-public class PotScript : MonoBehaviour, IDropHandler
+public class TimerScript : MonoBehaviour
 {
-    public GameObject Spaghetti;
-    public GameObject Fettuccine;
-    public GameObject SpagCanvas;
-    public GameObject FetCanvas;
-    public GameObject SpagAnchor;
-    public GameObject FetAnchor;
-    public AudioClip Sizzle;            // plays sizzle sound when ran
-    public GameObject Blocker;
-    public AudioSource Source;
-    public static bool InPot;             // true if spaghetti is already in pot
-    public static bool cookTimerStart = false;
-    [SerializeField] GameObject spagScooper;
-    public Image SpagImage;
-    public Image FetImage;
+    public float targetTime = 20.0f;        // the starting time of the timer
+    public bool timerStart = false;         // whether or not the timer has started yet
+    public TMP_Text buttonText;             // the text on the timer button
+    public AudioClip Beep;                  // plays beep sound when ran
+    public AudioSource Source;              // the source of the beep sound
+    public static float totalCookTime = 0.0f;       // the total cook time of the pasta (ignores whether or not the timer has been set)
 
-    public enum LevelCooked {overcooked, undercooked, perfect}; // an enum type that tells whether pasta is over, under, or perfectly cooked
-    public static LevelCooked CookedType;              // a variable of type LevelCooked
-
-    public enum PastaType {spaghetti, fettuccine, none}
-    public static PastaType PastaInPot = PastaType.none;
-
-    private Vector3 newPosition;
+    // Start is called before the first frame update
     public void Start()
     {
-        InPot = false;
-        newPosition.x = 0;
-        newPosition.y = 0;
-        newPosition.z = 0;
+        
     }
-    public void OnDrop(PointerEventData eventData)
+
+    // Update is called once per frame
+    public void Update()
     {
-        Debug.Log("Dropped");
-        if (eventData.pointerDrag != null && !InPot)
+        if (timerStart)     // check if the user started the timer yet
         {
-            eventData.pointerDrag.GetComponent<RectTransform>().anchoredPosition = GetComponent<RectTransform>().anchoredPosition * 1.5f;
-
-            switch (PastaInPot)
+            targetTime -= Time.deltaTime;           // update time each frame
+            buttonText.SetText(targetTime.ToString("#.0"));     // prints the current time rounded to 1 decimal place
+            if (targetTime <= 0.0f)             // check if time is at 0
             {
-                case PastaType.spaghetti:
-                    OrderGenerator.MealPasta = OrderGenerator.MenuPastaType.spaghetti;
-                    Debug.Log("Spagggggg");
-                    // GameObject SpaghettiClone = Instantiate(Spaghetti, new Vector3(-625.9998f, -84, 92.59552f), Quaternion.identity);        // spawn another spaghetti if placed in the right spot
-                    // SpaghettiClone.transform.SetParent(SpagCanvas.transform, false);
-
-                    SpagImage.transform.position = SpagAnchor.transform.position;
-                    break;
-                case PastaType.fettuccine:
-                    OrderGenerator.MealPasta = OrderGenerator.MenuPastaType.fetuccini;
-                    Debug.Log("Fettttttt");
-                    GameObject FettuccineClone = Instantiate(Fettuccine, new Vector3(-836, 168, 92.59552f), Quaternion.identity);        // spawn another fettuccine if placed in the right spot
-                    FettuccineClone.transform.SetParent(FetCanvas.transform, false);
-
-                    FetImage.transform.position = FetAnchor.transform.position;
-                    break;
+                timerEnded();           // if timer is ended, run the function
             }
-            InPot = true;
-            Source.PlayOneShot(Sizzle);
-            cookTimerStart = true;
-            spagScooper.SetActive(true);
-            Blocker.SetActive(true);
         }
     }
 
-    public void Update()
+    public void timerEnded()        // function gets executed when timer is ended
     {
-        if (cookTimerStart)
-            TimerScript.totalCookTime += Time.deltaTime;
+        Source.PlayOneShot(Beep);               // play the beeping sound when timer is done
+        targetTime = 0.0f;                      // set the displayed time to 0
+        timerStart = false;                     // timer isn't started
+        buttonText.SetText("Click to Start Timer");             // reset values
+        targetTime = 30.0f;
+    }     // timerEnded()
+
+    public void WhenClicked()                    // executed when the timer button is clicked
+    {
+        Debug.Log("Button Clicked");            // error checking
+        timerStart = !timerStart;               
     }
 }
